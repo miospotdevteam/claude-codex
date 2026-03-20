@@ -432,6 +432,13 @@ Hooks enforce this discipline automatically. Key behaviors to know:
 **NEVER bypass hooks.** If a hook blocks an action, follow the process it
 describes. Do not use alternative tools to work around it.
 
+**NEVER use the `.no-plan` bypass** (`echo "$PPID:N" > .no-plan-$PPID`)
+unless the user explicitly said "just do it" or "no plan" for a trivially
+obvious single-line change. If a hook blocks your edit because no plan
+exists, the correct response is to go create the plan — not to bypass the
+enforcement. The bypass exists as a user-directed escape hatch, not as a
+shortcut for Claude to skip discipline.
+
 ---
 
 ## Plugin Error Logging

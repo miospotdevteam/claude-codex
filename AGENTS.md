@@ -20,15 +20,16 @@
 - Prefer ChatGPT subscription sign-in for Codex. Do not require
   `OPENAI_API_KEY` for normal local use.
 - Keep `workflow/core/contracts/`, `README.md`, `CLAUDE.md`,
-  `orchestration/`, `.claude/agents/`, and `scripts/` aligned.
+  `orchestration/`, and `scripts/` aligned.
 - `workflow/core/contracts/agent-ownership.md` and
   `workflow/core/contracts/routing-matrix.md` are the canonical ownership and
   routing sources of truth.
 - `README.md` is the high-level repo map, not the sole source of truth.
-- `orchestration/scripts/` and `orchestration/agents/` are the canonical
-  orchestration-owned sources.
-- Root `scripts/` and `.claude/agents/` are compatibility surfaces and should
-  stay thin.
+- `orchestration/scripts/` are the canonical orchestration-owned sources.
+  Root `scripts/` are compatibility wrappers and should stay thin.
+- Codex is called directly via shell scripts (`codex-worker.sh`,
+  `codex-verifier.sh`), not through agent `.md` wrappers. Claude builds the
+  prompt and calls the script via Bash.
 - If the repo is not a git repository, Codex wrappers must use
   `--skip-git-repo-check`.
 - Use the helper scripts instead of ad hoc `codex exec` commands when the

@@ -397,4 +397,5 @@ If you catch yourself doing any of these, stop and reconsider:
 | Refactoring without running deps-query.py first (when dep maps exist) | Run deps-query.py on every target to get complete consumer lists |
 | Writing implementation before tests on a TDD step | Follow RED-GREEN-REFACTOR — tests first, always. Invoke the TDD skill |
 | Guessing at fixes when tests fail during verification | Invoke `look-before-you-leap:systematic-debugging` — root cause first |
+| Using `.no-plan` bypass when a hook blocks your edit | The bypass is for user-directed trivial overrides only. If the user didn't say "just do it", create the plan |
 | Starting a new feature without brainstorming the design | Invoke `look-before-you-leap:brainstorming` for creative tasks |

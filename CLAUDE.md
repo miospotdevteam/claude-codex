@@ -18,11 +18,13 @@
 ## Default Execution Flow
 
 1. Clarify the task and collect the exact requirement text.
-2. Use `scripts/codex-worker.sh` for implementation tasks that fit Codex.
+2. Build a self-contained prompt and call `scripts/codex-worker.sh` directly
+   via Bash for implementation tasks that fit Codex. Write long prompts to a
+   temp file and use `--prompt-file`. Always use `--output` for analysis tasks.
    The canonical implementation lives in `orchestration/scripts/codex-worker.sh`.
 3. Review the resulting changes before integrating them.
-4. Run `scripts/codex-verifier.sh` before reporting completion on any
-   significant work. The canonical implementation lives in
+4. Run `scripts/codex-verifier.sh --requirements-file <path>` before reporting
+   completion on any significant work. The canonical implementation lives in
    `orchestration/scripts/codex-verifier.sh`.
 5. If verification fails, fix the issues and re-run verification.
 
@@ -40,7 +42,6 @@
   `workflow/core/contracts/routing-matrix.md` are the canonical routing and
   ownership contracts.
 - `README.md` is the high-level map for this repository. Keep it aligned with
-  `AGENTS.md`, `workflow/`, `orchestration/`, `.claude/agents/`, and the helper scripts.
-- `orchestration/agents/` and `orchestration/scripts/` are the canonical
-  orchestration-owned sources; root `.claude/agents/` and `scripts/` exist as
-  compatibility surfaces.
+  `AGENTS.md`, `workflow/`, `orchestration/`, and the helper scripts.
+- `orchestration/scripts/` are the canonical orchestration-owned sources;
+  root `scripts/` exist as compatibility wrappers.

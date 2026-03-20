@@ -208,13 +208,21 @@ output = {
         "hookEventName": "PreToolUse",
         "permissionDecision": "deny",
         "permissionDecisionReason": (
-            "No active plan found for this session. The look-before-you-leap plugin "
-            "requires a plan before editing code.\n\n"
-            "To create a plan:\n"
-            "1. Explore the codebase (read files, grep consumers)\n"
-            "2. Write plan.json + masterPlan.md to .temp/plan-mode/active/<plan-name>/\n"
-            "3. Then proceed with edits\n\n"
-            "To bypass for trivial changes (max 3 edits): echo \"$PPID:3\" > .temp/plan-mode/.no-plan-$PPID"
+            "BLOCKED: No active plan found for this session.\n\n"
+            "You MUST follow the look-before-you-leap process before editing code. "
+            "Do NOT work around this — go back and do the work properly:\n\n"
+            "1. **Classify the task**: Does it need brainstorming first? "
+            "(New UI, new behavior, multiple design options → brainstorm. "
+            "Bug fix, config change, unambiguous path → explore directly.)\n"
+            "2. **Explore**: Read files in scope, their imports, their consumers. "
+            "Run deps-query if dep maps are configured. Read sibling files for patterns.\n"
+            "3. **Write discovery.md**: Persist findings to "
+            ".temp/plan-mode/active/<plan-name>/discovery.md\n"
+            "4. **Write plan.json + masterPlan.md**: Use the writing-plans skill. "
+            "Both files go in .temp/plan-mode/active/<plan-name>/\n"
+            "5. **Submit for Orbit review**: Then proceed with edits.\n\n"
+            "This hook exists because skipping planning is the #1 cause of "
+            "broken changes, missed consumers, and silent scope cuts."
         )
     }
 }

@@ -118,15 +118,20 @@ The root wrappers remain as compatibility entrypoints:
 These delegate to the orchestration-owned sources so the repo remains directly
 usable during the transition.
 
-## Current Agent Definitions
+## Codex Integration
 
-The canonical orchestration agent definitions now live under:
+Codex is called directly via shell scripts — no agent `.md` wrappers.
+Claude builds a self-contained prompt and calls the script via Bash:
 
-- `orchestration/agents/codex-worker.md`
-- `orchestration/agents/codex-verifier.md`
+```bash
+# Worker (implementation, analysis, refactors)
+scripts/codex-worker.sh --prompt-file /tmp/prompt.txt --output /tmp/result.txt
 
-The root `.claude/agents/` files remain as compatibility mirrors for current
-runtime discovery.
+# Verifier (independent verification)
+scripts/codex-verifier.sh --requirements-file /tmp/requirements.txt --output /tmp/result.txt
+```
+
+For parallel Codex tasks, dispatch multiple Bash calls simultaneously.
 
 ## Auth Model
 
