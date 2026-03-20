@@ -78,13 +78,21 @@ saves five minutes fixing.
 Before exploring, classify the task:
 
 - **Brainstorm first** if the task adds new user-facing behavior, introduces
-  a new abstraction, or has more than one reasonable design approach. Invoke
-  `look-before-you-leap:brainstorming` — it produces a `design.md` that
-  feeds into Step 2. Examples: "add priority to tasks", "build a dashboard",
-  "add team permissions". If in doubt, brainstorm — it's cheap.
+  a new abstraction, or has more than one reasonable design approach. **Use
+  the Skill tool** with `skill: "look-before-you-leap:brainstorming"` — it
+  produces a `design.md` that feeds into Step 2. Examples: "add priority to
+  tasks", "build a dashboard", "add team permissions". If in doubt,
+  brainstorm — it's cheap.
 - **Explore directly** if the task is a bug fix, a rename/refactor, a
   config change, or the implementation path is unambiguous (e.g., "add
   field X to existing type Y and propagate").
+
+**"Invoke" means call the Skill tool.** When this conductor says "invoke
+`look-before-you-leap:brainstorming`", that means use the Skill tool —
+`Skill(skill: "look-before-you-leap:brainstorming")`. Do NOT brainstorm
+inline by just talking. The skill contains structured phases, reference
+files, and output templates that ad-hoc conversation does not replicate.
+The same applies to ALL skill invocations throughout this document.
 
 ### Exploration protocol
 
