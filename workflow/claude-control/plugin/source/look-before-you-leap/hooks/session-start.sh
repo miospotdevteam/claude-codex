@@ -586,6 +586,36 @@ if dep_maps.get("modules"):
     )
     parts.extend(["", "---", "", dep_maps_notice])
 
+# --- Codex orchestration routing ---
+codex_worker_script = os.path.join(scripts_dir, "codex-worker.sh")
+codex_verifier_script = os.path.join(scripts_dir, "codex-verifier.sh")
+routing_context = (
+    "**Codex Orchestration (two-agent routing):**\n\n"
+    "You have access to `codex-worker` and `codex-verifier` sub-agents that "
+    "delegate work to OpenAI Codex CLI.\n\n"
+    "**Routing rules — when to delegate to Codex:**\n"
+    "- Large refactors and code generation from a clear spec\n"
+    "- Bug investigation and root cause analysis\n"
+    "- Independent verification after significant work\n"
+    "- Constrained backend execution with well-scoped requirements\n\n"
+    "**Keep in Claude (do NOT delegate):**\n"
+    "- Planning, architecture, and ambiguity resolution\n"
+    "- Frontend design and UI work\n"
+    "- MCP-dependent and external-tool work\n"
+    "- Final user communication\n\n"
+    "**Default execution flow for significant tasks:**\n"
+    "1. Clarify the task and collect requirements\n"
+    "2. Use the `codex-worker` agent for implementation tasks that fit Codex\n"
+    "3. Review the resulting changes before integrating\n"
+    f"4. Run `{codex_verifier_script} --requirements-file <path>` before reporting completion\n"
+    "5. If verification fails, fix issues and re-verify\n\n"
+    "**Auth:** Prefer subscription auth. Use `codex login` if needed. "
+    "Do not assume `OPENAI_API_KEY` is present.\n\n"
+    f"**Worker script:** `{codex_worker_script}`\n"
+    f"**Verifier script:** `{codex_verifier_script}`"
+)
+parts.extend(["", "---", "", routing_context])
+
 if active_summary:
     parts.extend(["", "---", "", active_summary])
 
