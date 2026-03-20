@@ -1,8 +1,8 @@
 # plan.json Schema
 
-The execution source of truth for every plan. The active agent and its runtime
-helpers read and update this file to track progress. `masterPlan.md` is the
-human-facing presentation document and does not contain execution state.
+The execution source of truth for every plan. {{RUNTIME_DESC}} read
+and update this file to track progress. `masterPlan.md` is the human-facing
+proposal document and does not contain execution state.
 
 ## Location
 
@@ -11,8 +11,8 @@ human-facing presentation document and does not contain execution state.
 ```
 
 Parallel same-repo workflows are supported. Session ownership should be tracked
-by adapter-specific runtime metadata, not by changing the meaning of
-`plan.json`.
+by {{RUNTIME_METADATA}}, not by
+changing the meaning of `plan.json`.
 
 ## Full Schema
 
@@ -22,7 +22,7 @@ by adapter-specific runtime metadata, not by changing the meaning of
   "title": "Descriptive Title",
   "context": "What the user asked for — enough for a fresh context window to understand the task without the original conversation.",
   "status": "active",
-  "requiredSkills": ["<tool-specific-skill-id>"],
+  "requiredSkills": ["{{SKILL_PREFIX}}frontend-design"],
   "disciplines": ["testing-checklist.md", "security-checklist.md"],
   "discovery": {
     "scope": "Files/directories in scope. Be explicit about boundaries.",
@@ -30,7 +30,7 @@ by adapter-specific runtime metadata, not by changing the meaning of
     "consumers": "Who imports/uses the files you're changing. Include file paths.",
     "existingPatterns": "How similar problems are already solved in this codebase.",
     "testInfrastructure": "Test framework, where tests live, how to run them.",
-    "conventions": "Project-specific conventions from <repo-guidance-file> or observed patterns.",
+    "conventions": "Project-specific conventions from {{GUIDANCE_FILE}} or observed patterns.",
     "blastRadius": "What could break if you get this wrong.",
     "confidence": "high"
   },
@@ -39,6 +39,9 @@ by adapter-specific runtime metadata, not by changing the meaning of
       "id": 1,
       "title": "Step title",
       "status": "pending",
+{{#claude}}
+      "agent": "claude",
+{{/claude}}
       "skill": "none",
       "simplify": false,
       "qa": false,
@@ -69,7 +72,7 @@ by adapter-specific runtime metadata, not by changing the meaning of
 | `title` | string | yes | Human-readable title |
 | `context` | string | yes | Request context that survives compaction |
 | `status` | string | yes | `"active"` or `"completed"` |
-| `requiredSkills` | string[] | yes | Exact skill identifiers for the active tool |
+| `requiredSkills` | string[] | yes | {{REQUIRED_SKILLS_DESC}} |
 | `disciplines` | string[] | yes | Checklist filenames that apply |
 | `discovery` | object | yes | All 8 exploration sections |
 | `steps` | Step[] | yes | Ordered list of execution steps |
@@ -84,9 +87,12 @@ by adapter-specific runtime metadata, not by changing the meaning of
 | `id` | number | yes | Sequential step number (1-based) |
 | `title` | string | yes | Step title |
 | `status` | string | yes | One of: `pending`, `in_progress`, `done`, `blocked` |
+{{#claude}}
+| `agent` | string | yes | Who executes: `"claude"`, `"codex-worker"`, or `"codex-verifier"` |
+{{/claude}}
 | `skill` | string | yes | Skill to invoke, or `"none"` |
 | `simplify` | boolean | yes | Whether to run simplification after the step |
-| `qa` | boolean | no | Whether to run an extra verification pass after the step |
+| `qa` | boolean | no | Whether to run an extra fresh-eyes verification pass after the step |
 | `files` | string[] | yes | Files involved in the step |
 | `description` | string | yes | Self-contained execution description |
 | `acceptanceCriteria` | string | yes | How to know the step is complete |
@@ -117,6 +123,25 @@ by adapter-specific runtime metadata, not by changing the meaning of
 | `status` | string | yes | One of: `pending`, `in_progress`, `done` |
 | `notes` | string? | no | Execution notes |
 
+{{#claude}}
+## Agent Values
+
+Each step declares which model executes it. This makes routing explicit in
+the plan so reviewers know what runs where:
+
+| Value | When to use |
+|---|---|
+| `"claude"` | Planning, architecture, UI/frontend work, MCP-dependent tasks, ambiguous scope, integration. Default for most steps. |
+| `"codex-worker"` | Large refactors, code generation from a clear spec, isolated bug fixes, repetitive sweeps, well-scoped backend work. Requires a self-contained description — Codex has no conversation context. |
+| `"codex-verifier"` | Independent verification after significant work, bug root cause analysis. Reports findings only — does not implement fixes. |
+
+**Routing rules:**
+- Steps with `skill` values (TDD, frontend-design, etc.) should almost always be `"claude"` — skills require conversation context.
+- Steps that are pure implementation with a clear spec → `"codex-worker"`.
+- The final verification step of any plan → `"codex-verifier"`.
+- When unsure, default to `"claude"`.
+
+{{/claude}}
 ## Status Values
 
 Steps, progress items, and groups all use the same status values:
@@ -130,20 +155,32 @@ Steps, progress items, and groups all use the same status values:
 
 ## Updating plan.json
 
-The active tool may use helper utilities, hooks, wrappers, or direct scripting
-to update `plan.json`. The mechanism can vary by adapter, but the semantics do
-not:
+{{#claude}}
+Claude may use hooks, helper utilities, or Bash-driven `python3` calls into
+`plan_utils.py` to update `plan.json`. The mechanism can vary, but the
+semantics do not:
+{{/claude}}
+{{#codex}}
+Codex may use helper utilities, wrappers, or direct `python3` calls into
+`plan_utils.py` to update `plan.json`. The mechanism can vary, but the
+semantics do not:
+{{/codex}}
 
 - one execution source of truth
 - deterministic status updates
 - completed summaries appended as work finishes
 - deviations recorded when execution leaves the approved baseline
-- session ownership tracked outside `plan.json` when parallel workflows are in
-  play
+- session ownership tracked outside `plan.json` when parallel workflows are in play
 
-See `workflow/core/contracts/tool-adapter-rules.md` and
-`workflow/core/contracts/parallel-workflows.md` for what adapters may
-customize.
+Example commands:
+
+```bash
+python3 /path/to/plan_utils.py update-step /path/to/plan.json 3 in_progress
+python3 /path/to/plan_utils.py update-progress /path/to/plan.json 3 0 done
+python3 /path/to/plan_utils.py add-summary /path/to/plan.json "Step 3: Migrated all hooks to JSON parsing"
+python3 /path/to/plan_utils.py status /path/to/plan.json
+python3 /path/to/plan_utils.py next-step /path/to/plan.json
+```
 
 ## masterPlan.md Companion Rules
 

@@ -6,13 +6,12 @@ concrete answers and confidence is Medium or higher.
 
 ---
 
-## Step 0: Run deps-query First When Configured
+## Step 0: Run Dependency Query First When Configured
 
-Before answering any question below, check the active Claude control layer for
-the resolved `deps-query.py` command. If dependency maps are configured, run
-the query on every file in scope before reading broadly or grepping. A hook may
-enforce this, but you should do it proactively rather than waiting to be
-blocked.
+Before answering any question below, check the active control layer for the
+resolved dependency-query command. If dependency maps are configured, run the
+query on every file in scope before reading broadly or grepping. For audits,
+run it on key entry points per module.
 
 Why first:
 
@@ -23,8 +22,8 @@ Why first:
 Record the output. You will need it for consumers, blast radius, and the
 discovery summary.
 
-If dependency maps are not configured and this is a TypeScript project, suggest
-setting them up before large shared-code changes.
+If dependency maps are not configured and this is a TypeScript project, note
+that enabling dep maps is recommended for large shared-code changes.
 
 ## 1. What is the scope?
 
@@ -79,7 +78,7 @@ How to answer:
 
 - read sibling files in the same area
 - look for shared utilities and established patterns
-- read `CLAUDE.md`, README files, and local guidance
+- read repo guidance such as `CLAUDE.md`, `AGENTS.md`, or equivalent project docs
 
 Output:
 

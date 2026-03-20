@@ -8,51 +8,85 @@ configured graph source exists.
 
 ## Core Rule
 
-If dependency maps are configured for the active tool, use the dependency-query
-helper before estimating consumer count or blast radius.
+If dependency maps are configured for {{TOOL_NAME}}, use `deps-query.py` before
+estimating consumer count or blast radius.
 
-Adapters provide the concrete command and config path. Shared-core owns the
-behavioral rule, not the exact invocation syntax.
+## Quick Start
 
-## What the Query Must Produce
+```bash
+# Query a file's dependencies and dependents (auto-regens if stale)
+python3 {{SCRIPTS_PATH}}/deps-query.py <project_root> <file_path>
 
-The dependency-query helper should report:
+# Same, JSON output
+python3 {{SCRIPTS_PATH}}/deps-query.py <project_root> <file_path> --json
+```
+
+The output should report:
 
 - `DEPENDENCIES`: files the target imports
 - `DEPENDENTS`: files that import or otherwise depend on the target
 - `BLAST RADIUS`: count of direct consumers and the modules they live in
 
-## Generation Expectations
+## Generation Commands
 
-The underlying graph generator should support:
+```bash
+python3 {{SCRIPTS_PATH}}/deps-generate.py <project_root> --module apps/api
+python3 {{SCRIPTS_PATH}}/deps-generate.py <project_root> --all
+python3 {{SCRIPTS_PATH}}/deps-generate.py <project_root> --stale-only
+```
 
-- generating one configured module
-- generating all configured modules
-- refreshing only stale modules
+## Configuration
 
-The exact commands and config locations are adapter-specific.
+{{#claude}}
+In `{{LOCAL_CONFIG}}` {{LOCAL_CONFIG_FORMAT}}:
 
-## Configuration Model
+```yaml
+dep_maps:
+  dir: .claude/deps
+  tool_cmd: "madge --json --extensions ts,tsx"
+  modules:
+    - apps/api
+    - apps/web-consumer
+    - packages/shared
+```
+{{/claude}}
+{{#codex}}
+In `{{LOCAL_CONFIG}}`:
 
-Each tool may store dependency-map configuration differently, but the model
-should stay aligned:
-
-- a directory where dep maps live
-- a graph-generation command
-- a list of tracked modules
+```json
+{
+  "dep_maps": {
+    "dir": ".codex/deps",
+    "tool_cmd": "madge --json --extensions ts,tsx",
+    "modules": [
+      "apps/api",
+      "apps/web-consumer",
+      "packages/shared"
+    ]
+  }
+}
+```
+{{/codex}}
 
 Each tracked module should produce a module-specific dep-map file.
 
 ## Freshness Model
 
-Dep maps stay fresh through some combination of:
+{{#claude}}
+Claude normally keeps dep maps fresh through:
 
-- automatic stale marking after relevant edits
+- hook-based stale marking after relevant edits
+- mtime-based stale detection during generation or query
+{{/claude}}
+{{#codex}}
+Codex currently keeps dep maps fresh through:
+
 - manual stale marking when the operator knows a map is outdated
 - mtime-based stale detection during generation or query
+{{/codex}}
 
-When the dependency-query helper runs, it should refresh stale data before
-returning results when practical.
+When `deps-query.py` runs, it should refresh stale data before returning
+results when practical.
 
 ## When to Use
 

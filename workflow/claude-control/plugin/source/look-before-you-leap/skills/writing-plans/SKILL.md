@@ -123,6 +123,7 @@ specific behavior, then implements just enough to pass.
   "id": 1,
   "title": "Email validation utility",
   "status": "pending",
+  "agent": "claude",
   "skill": "look-before-you-leap:test-driven-development",
   "simplify": false,
   "files": ["src/lib/validate-email.ts", "tests/lib/validate-email.test.ts"],
@@ -158,6 +159,36 @@ to check.
 single "Implement everything" item. That's test-first waterfall, not TDD.
 The whole point of TDD is that each cycle's implementation informs what
 the next cycle should test.
+
+#### Which `agent` to assign each step
+
+Every step MUST have an `agent` field declaring who executes it. This
+field drives actual delegation during execution — the conductor reads it
+to decide whether to run the step itself or hand it off to Codex.
+
+| If the step involves... | Set `agent` to... |
+|---|---|
+| Planning, architecture, ambiguity resolution | `"claude"` |
+| Brainstorming, option comparison, scoping | `"claude"` |
+| Frontend UI / visual design | `"claude"` |
+| MCP / external tool / database work | `"claude"` |
+| Backend implementation from a clear spec | `"codex-worker"` |
+| Large refactors across many files | `"codex-worker"` |
+| Bug investigation / root cause analysis | `"codex-worker"` |
+| Framework or library migration | `"codex-worker"` |
+| Verification after significant implementation | `"codex-verifier"` |
+| Security review / adversarial check | `"codex-verifier"` |
+| Config changes, wiring, glue code | `"claude"` |
+| Final verification steps | `"claude"` (or `"codex-verifier"` for significant work) |
+
+**When in doubt, use `"claude"`.** Only delegate to `"codex-worker"` when
+the step has a clear, self-contained spec that doesn't require interactive
+judgment. Only use `"codex-verifier"` for independent QA after meaningful
+implementation work.
+
+**Do NOT omit this field.** Do NOT use values like `"main"`, `"self"`, or
+`"default"` — only `"claude"`, `"codex-worker"`, and `"codex-verifier"`
+are valid. The conductor dispatches based on this exact value.
 
 #### Which `skill` to assign each step
 
@@ -213,6 +244,9 @@ covered by automated tests.
 
 #### Key rules
 
+- **Every step needs `agent`** — set `"claude"`, `"codex-worker"`, or
+  `"codex-verifier"`. Never omit this field. Never use other values like
+  `"main"` or `"self"`. This field drives actual delegation during execution.
 - **Exact skill identifiers** — in each step's `skill` field, use the full
   skill name (e.g., `look-before-you-leap:frontend-design`), never vague
   hints. Post-compaction Claude has no memory — only exact names work.

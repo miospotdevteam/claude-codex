@@ -1,0 +1,36 @@
+{
+  "claude": {
+    "TOOL_NAME": "Claude",
+    "TOOL_NAME_LOWER": "claude",
+    "GUIDANCE_FILE": "CLAUDE.md",
+    "SKILL_PREFIX": "look-before-you-leap:",
+    "ENGINEERING_SKILL": "look-before-you-leap:engineering-discipline",
+    "LOCAL_CONFIG": ".claude/look-before-you-leap.local.md",
+    "LOCAL_CONFIG_FORMAT": "YAML frontmatter",
+    "SCRIPTS_PATH": "<plugin>/skills/look-before-you-leap/scripts",
+    "RUNTIME_DESC": "Claude and its runtime hooks",
+    "RUNTIME_METADATA": "Claude runtime metadata such as lock files or equivalent sidecars",
+    "RUNTIME_AUDIENCE": "Claude + hooks",
+    "PACKAGES_REF": "See `PACKAGES.md` in the plugin root for the full list of recommended packages and online tools.",
+    "CONFIG_HOOK_NOTE": "A hook may enforce this, but you should do it proactively rather than waiting to be blocked.",
+    "DEPS_NOT_CONFIGURED_NOTE": "suggest setting them up before large shared-code changes.",
+    "REQUIRED_SKILLS_DESC": "Exact skill identifiers for Claude"
+  },
+  "codex": {
+    "TOOL_NAME": "Codex",
+    "TOOL_NAME_LOWER": "codex",
+    "GUIDANCE_FILE": "AGENTS.md",
+    "SKILL_PREFIX": "lbyl-",
+    "ENGINEERING_SKILL": "lbyl-engineering-discipline",
+    "LOCAL_CONFIG": ".codex/lbyl-deps.json",
+    "LOCAL_CONFIG_FORMAT": "JSON",
+    "SCRIPTS_PATH": "~/.codex/skills/lbyl-conductor/scripts",
+    "RUNTIME_DESC": "Codex sessions and helper scripts",
+    "RUNTIME_METADATA": "Codex runtime metadata such as lock files or equivalent sidecars",
+    "RUNTIME_AUDIENCE": "Codex sessions",
+    "PACKAGES_REF": "Use the package names above directly. When working from this sync repository, you can also consult `workflow/claude-control/plugin/source/look-before-you-leap/PACKAGES.md` for the broader package and tooling list.",
+    "CONFIG_HOOK_NOTE": "For audits, run it on key entry points per module.",
+    "DEPS_NOT_CONFIGURED_NOTE": "note that enabling dep maps is recommended for large shared-code changes.",
+    "REQUIRED_SKILLS_DESC": "Exact skill identifiers for Codex"
+  }
+}

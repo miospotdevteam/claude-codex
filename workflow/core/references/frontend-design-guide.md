@@ -309,7 +309,7 @@ These are expert-designed, accessibility-tested, and avoid color clashes:
 For Tailwind projects, `tailwindcss-radix-colors` brings Radix's functional
 scales into Tailwind utilities with automatic dark mode.
 
-Use the package names above directly. When working from this sync repository, you can also consult `workflow/claude-control/plugin/source/look-before-you-leap/PACKAGES.md` for the broader package and tooling list.
+{{PACKAGES_REF}}
 
 ### Building a palette from the axes
 

@@ -1,8 +1,8 @@
 # plan.json Schema
 
-The execution source of truth for every plan. Codex sessions and helper scripts
-read and update this file to track progress. `masterPlan.md` is the
-human-facing proposal document and does not contain execution state.
+The execution source of truth for every plan. Codex sessions and helper scripts read
+and update this file to track progress. `masterPlan.md` is the human-facing
+proposal document and does not contain execution state.
 
 ## Location
 
@@ -145,7 +145,7 @@ Example commands:
 ```bash
 python3 /path/to/plan_utils.py update-step /path/to/plan.json 3 in_progress
 python3 /path/to/plan_utils.py update-progress /path/to/plan.json 3 0 done
-python3 /path/to/plan_utils.py add-summary /path/to/plan.json "Step 3: Migrated all routes to typed handlers"
+python3 /path/to/plan_utils.py add-summary /path/to/plan.json "Step 3: Migrated all hooks to JSON parsing"
 python3 /path/to/plan_utils.py status /path/to/plan.json
 python3 /path/to/plan_utils.py next-step /path/to/plan.json
 ```

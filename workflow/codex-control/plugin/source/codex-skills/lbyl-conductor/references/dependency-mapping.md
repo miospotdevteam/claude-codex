@@ -14,15 +14,11 @@ estimating consumer count or blast radius.
 ## Quick Start
 
 ```bash
-# Preferred form
+# Query a file's dependencies and dependents (auto-regens if stale)
 python3 ~/.codex/skills/lbyl-conductor/scripts/deps-query.py <project_root> <file_path>
 
 # Same, JSON output
 python3 ~/.codex/skills/lbyl-conductor/scripts/deps-query.py <project_root> <file_path> --json
-
-# Compatibility form
-python3 ~/.codex/skills/lbyl-conductor/scripts/deps-query.py <file_path> --project-root <project_root>
-python3 ~/.codex/skills/lbyl-conductor/scripts/deps-query.py <file_path> --project-root <project_root> --json
 ```
 
 The output should report:

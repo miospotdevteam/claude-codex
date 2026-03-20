@@ -12,7 +12,7 @@ Use it alongside the `frontend-design-checklist.md` and the main
 The 6-axis decision matrix from the skill narrows the aesthetic space. Here's
 how each axis maps to concrete design choices.
 
-### Audience (Technical ←→ General Public)
+### Audience (Technical <--> General Public)
 
 | Score | Typography | Color | Layout |
 |---|---|---|---|
@@ -20,7 +20,7 @@ how each axis maps to concrete design choices.
 | 3 (Mixed) | Clean sans-serif, clear hierarchy | Balanced palette with good contrast | Standard grid, clear sections |
 | 4-5 (General) | Friendly display fonts, generous sizing | Vibrant, approachable colors | Spacious, visual-first, clear CTAs |
 
-### Formality (Corporate ←→ Casual)
+### Formality (Corporate <--> Casual)
 
 | Score | Typography | Color | Texture |
 |---|---|---|---|
@@ -28,7 +28,7 @@ how each axis maps to concrete design choices.
 | 3 (Balanced) | Modern sans-serif, moderate personality | Professional with one accent | Light textures, balanced whitespace |
 | 4-5 (Casual) | Display fonts with personality, loose hierarchy | Bold colors, playful combinations | Organic shapes, hand-drawn elements, patterns |
 
-### Energy (Calm ←→ Dynamic)
+### Energy (Calm <--> Dynamic)
 
 | Score | Animation | Layout | Color |
 |---|---|---|---|
@@ -36,7 +36,7 @@ how each axis maps to concrete design choices.
 | 3 (Moderate) | Purposeful hover states, gentle page transitions | Some variation, deliberate emphasis | Moderate saturation with clear hierarchy |
 | 4-5 (Dynamic) | Choreographed entrances, scroll-triggered effects, hover surprises | Asymmetric, overlapping, diagonal flow | High saturation, strong contrasts |
 
-### Density (Spacious ←→ Dense)
+### Density (Spacious <--> Dense)
 
 | Score | Spacing | Typography | Components |
 |---|---|---|---|
@@ -44,7 +44,7 @@ how each axis maps to concrete design choices.
 | 3 (Balanced) | Standard spacing scale, clear breathing room | Medium type scale, 1.5-1.6 line-height | Comfortable density, clear grouping |
 | 4-5 (Dense) | Compact spacing, efficient use of space | Smaller body text, tighter line-height | Tables, dashboards, multi-column layouts |
 
-### Era (Classic ←→ Contemporary)
+### Era (Classic <--> Contemporary)
 
 | Score | Typography | Patterns | Color |
 |---|---|---|---|
@@ -52,7 +52,7 @@ how each axis maps to concrete design choices.
 | 3 (Modern) | Contemporary sans-serif, clean lines | Current best practices | Clean, well-established combinations |
 | 4-5 (Trendy) | Variable fonts, experimental display types | Glassmorphism, bento grids, scroll-driven animations | Current trend palettes (but make them yours) |
 
-### Temperature (Warm ←→ Cool)
+### Temperature (Warm <--> Cool)
 
 | Score | Shapes | Typography | Color |
 |---|---|---|---|
@@ -294,7 +294,7 @@ These are expert-designed, accessibility-tested, and avoid color clashes:
 | Library | Best for | Install |
 |---|---|---|
 | **Radix Colors** (`@radix-ui/colors`) | Projects with dark mode — 12-step functional scales with built-in light/dark pairs. Each step has a specific purpose (bg, subtle bg, border, text, etc.) | `npm i @radix-ui/colors` |
-| **Open Color** (`open-color`) | Simple projects — 13 hues × 10 shades, clean and balanced | `npm i open-color` |
+| **Open Color** (`open-color`) | Simple projects — 13 hues x 10 shades, clean and balanced | `npm i open-color` |
 | **Palx** (`palx`) | Brand color expansion — one hex in, full-spectrum palette out | `npm i palx` |
 | **Tailwind v4 built-in** | Already using Tailwind — OKLCH palette, wide gamut | Built-in |
 
@@ -309,8 +309,7 @@ These are expert-designed, accessibility-tested, and avoid color clashes:
 For Tailwind projects, `tailwindcss-radix-colors` brings Radix's functional
 scales into Tailwind utilities with automatic dark mode.
 
-See `PACKAGES.md` in the plugin root for the full list of recommended
-packages and online tools.
+See `PACKAGES.md` in the plugin root for the full list of recommended packages and online tools.
 
 ### Building a palette from the axes
 
@@ -357,8 +356,8 @@ Given a brand color, generate a full system:
 
 **Method 3: Complementary / Split-Complementary** (for secondary + accent)
 1. Primary hue established from brand color
-2. Secondary: rotate hue 180° (complementary) or ±150° (split-complementary)
-3. Accent: rotate hue 30-60° from primary (analogous but more saturated)
+2. Secondary: rotate hue 180 degrees (complementary) or +/-150 degrees (split-complementary)
+3. Accent: rotate hue 30-60 degrees from primary (analogous but more saturated)
 4. Generate each color's 50-950 scale using Method 1 or 2
 
 **Neutral generation:** Tint neutrals toward the primary hue for cohesion:

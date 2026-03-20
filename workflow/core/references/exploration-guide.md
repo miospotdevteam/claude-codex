@@ -40,10 +40,17 @@ File you're changing
   └── What it shares with siblings (common patterns)
 ```
 
+{{#claude}}
+**If dep maps are configured**: Use `deps-query.py` to trace both
+directions — it returns DEPENDENCIES and DEPENDENTS across all modules
+instantly. A hook enforces this over grep.
+{{/claude}}
+{{#codex}}
 **If dep maps are configured**: You MUST use `deps-query.py` to trace both
 directions. It returns DEPENDENCIES and DEPENDENTS across all modules
 instantly — including transitive cross-module consumers that grep would miss.
 Do NOT fall back to grep for consumer analysis when dep maps exist.
+{{/codex}}
 
 **If dep maps are NOT configured**: Use `Grep` to trace both directions.
 Don't stop at the first level — if you're changing a utility that's imported
@@ -52,6 +59,20 @@ too.
 
 ### Using dependency maps (when configured)
 
+{{#claude}}
+If dep maps are configured, use `deps-query.py` for consumer analysis.
+A hook enforces this — grepping for import patterns on TypeScript files
+will be blocked when dep maps exist.
+
+`deps-query.py` returns both DEPENDENCIES (what the file imports) and
+DEPENDENTS (what imports it) across all configured modules — including
+cross-module consumers. Maps auto-regenerate when stale.
+See `references/dependency-mapping.md` for full details.
+
+**When to use grep instead**: Non-TypeScript files, string references
+(config keys, env vars), or when dep maps are not configured.
+{{/claude}}
+{{#codex}}
 If dep maps are configured (the conductor skill's "Minimum exploration
 actions" section has the resolved command), you MUST use `deps-query.py`
 instead of manual grep for consumer analysis. This is not a suggestion —
@@ -69,6 +90,7 @@ See `references/dependency-mapping.md` for full details.
 references (config keys, env vars), or when dep maps are not configured.
 Never grep for import/from/require patterns on TypeScript files when dep
 maps exist — that is exactly what deps-query.py does, but better.
+{{/codex}}
 
 ### Check for feature flags and configuration
 
@@ -90,7 +112,7 @@ These constraints change implementation approach significantly.
 - Skip searching for existing utilities
 - Don't count consumers
 - Don't read tests
-- Don't check AGENTS.md or README
+- Don't check {{GUIDANCE_FILE}} or README
 
 ### Thorough (prevents failures)
 

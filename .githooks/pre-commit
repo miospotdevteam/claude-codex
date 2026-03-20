@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Pre-commit hook: ensure resolved references are up-to-date
+set -euo pipefail
+
+# Only check if workflow/core/ files are being committed
+if git diff --cached --name-only | grep -q '^workflow/core/'; then
+  echo "workflow/core/ changed — checking resolved references..."
+  python3 workflow/scripts/resolve-refs.py --check
+  if [ $? -ne 0 ]; then
+    echo ""
+    echo "ERROR: Resolved references are stale. Run 'make sync-refs' first."
+    exit 1
+  fi
+fi

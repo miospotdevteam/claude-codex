@@ -1,8 +1,8 @@
 # masterPlan.md Template
 
-`masterPlan.md` is the user-facing proposal document. It communicates intent,
-critical decisions, warnings, and risk, not execution state. Execution state
-lives in `plan.json`.
+`masterPlan.md` is the user-facing proposal document reviewed via Orbit. It
+communicates intent, critical decisions, warnings, and risk, not execution
+state. Execution state lives in `plan.json`.
 
 **Write-once**: `masterPlan.md` freezes after approval. It is never updated
 during execution. All runtime state, progress, results, and deviations live in
@@ -15,23 +15,24 @@ No checkboxes. No progress tracking. No result fields.
 ```markdown
 # Plan: <Descriptive Title>
 
-> **For the active agent:** REQUIRED SKILL: Use <core-engineering-skill-id>
-> for all steps. Also invoke each step's `Skill` field when it is not `none`.
-> See the Required Skills section for the full list.
+> **For {{TOOL_NAME}}:** REQUIRED SKILL: Use
+> `{{ENGINEERING_SKILL}}` for all steps. Also invoke each
+> step's `Skill` field when it is not `none`. See the Required Skills section
+> for the full list.
 
 ## Context
 
-<2-3 sentences: what the user asked for, what project this is, key constraints.
-Write this so a fresh context window understands the task without needing the
-original conversation.>
+<2-3 sentences: what the user asked for, what project this is, key
+constraints. Write this so a fresh context window understands the task without
+needing the original conversation.>
 
 ## Required Skills
 
 <List any installed skills that should be invoked at specific steps. Use exact
-skill identifiers for the active tool. Format:
+skill identifiers for {{TOOL_NAME}}. Format:
 
-- **Step N**: `<frontend-design-skill-id>` (full mode)
-- **Step M**: `<writing-plans-skill-id>` (plan generation)
+- **Step N**: `{{SKILL_PREFIX}}frontend-design` (full mode)
+- **Step M**: `{{SKILL_PREFIX}}writing-plans` (plan generation)
 
 If no external skills are needed, write "None — all work covered by core
 disciplines.">
@@ -75,7 +76,7 @@ disciplines.">
 ## Steps
 
 ### Step 1: <Title>
-- **Skill**: `<tool-specific-step-skill-id>` | none
+- **Skill**: `{{SKILL_PREFIX}}refactoring` | none
 - **Simplify**: true/false
 - **Sub-plan**: none
 - **Files involved**: `src/foo.ts`, `src/bar.ts`
@@ -106,8 +107,8 @@ Plan directories use kebab-case under `.temp/plan-mode/active/`.
 When all steps are complete, the plan folder moves to `completed/`.
 
 Parallel workflows are allowed, so multiple active plan directories may exist
-at once. Ownership and resume selection are handled by the runtime adapter, not
-by changing the meaning of `masterPlan.md`.
+at once. Ownership and resume selection are handled by {{TOOL_NAME}} runtime metadata,
+not by changing the meaning of `masterPlan.md`.
 
 ## Relationship to plan.json
 
@@ -116,7 +117,7 @@ contain the same planned steps, but:
 
 | Aspect | `plan.json` | `masterPlan.md` |
 |---|---|---|
-| Audience | Active agent + runtime tooling | User / reviewer |
+| Audience | {{RUNTIME_AUDIENCE}} | User / reviewer |
 | Execution state | Yes | No |
 | Updated during execution | Yes | Never |
 | Review artifact | No | Yes |

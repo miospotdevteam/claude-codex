@@ -15,9 +15,10 @@ No checkboxes. No progress tracking. No result fields.
 ```markdown
 # Plan: <Descriptive Title>
 
-> **For Codex:** REQUIRED SKILL: Use `lbyl-engineering-discipline` for all
-> steps. Also invoke each step's `Skill` field when it is not `none`. See the
-> Required Skills section for the full list.
+> **For Codex:** REQUIRED SKILL: Use
+> `lbyl-engineering-discipline` for all steps. Also invoke each
+> step's `Skill` field when it is not `none`. See the Required Skills section
+> for the full list.
 
 ## Context
 
@@ -116,7 +117,7 @@ contain the same planned steps, but:
 
 | Aspect | `plan.json` | `masterPlan.md` |
 |---|---|---|
-| Audience | Codex session + helper scripts | User / reviewer |
+| Audience | Codex sessions | User / reviewer |
 | Execution state | Yes | No |
 | Updated during execution | Yes | Never |
 | Review artifact | No | Yes |

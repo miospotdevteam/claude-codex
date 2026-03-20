@@ -194,6 +194,9 @@ compaction recovery depends on them. Do NOT invent your own schema:
   no exceptions. Progress arrays go INSIDE each step, never at the top level.
 
 **Common mistakes to avoid:**
+- Do NOT omit the `agent` field on steps — every step MUST have `agent`
+  set to `"claude"`, `"codex-worker"`, or `"codex-verifier"`. Do NOT use
+  values like `"main"` or `"self"`. This field drives actual delegation.
 - Do NOT put a `progress` array at the top level — it belongs inside EACH step
 - Do NOT use `name` on steps — use `title`
 - Do NOT invent skill values like `"code-editing"` or `"verification"` —

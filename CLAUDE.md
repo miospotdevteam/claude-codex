@@ -34,6 +34,23 @@
 - For Codex, use `codex login` and confirm with `codex login status`.
 - Do not assume `OPENAI_API_KEY` is present.
 
+## Shared References (workflow/core/)
+
+- `workflow/core/` is the **single source of truth** for all reference files,
+  checklists, and schemas shared between the Claude and Codex plugins.
+- **NEVER edit resolved copies directly.** The files in
+  `workflow/claude-control/.../references/` and
+  `workflow/codex-control/.../references/` are generated outputs.
+- To change a shared reference: edit the template in `workflow/core/`, then
+  run `make sync-refs` (or `make install` which syncs automatically).
+- Templates use `{{VAR_NAME}}` placeholders and `{{#claude}}...{{/claude}}`
+  / `{{#codex}}...{{/codex}}` conditional blocks. Variables are defined in
+  `workflow/core/resolve-vars.json`.
+- Tool-specific files that can't be templated live in
+  `workflow/core/overrides/{claude,codex}/`.
+- The git pre-commit hook blocks commits with stale resolved copies.
+  Run `make setup-hooks` once to activate it.
+
 ## Repo Notes
 
 - This repo may be used before `git init`; the Codex wrappers handle that by
