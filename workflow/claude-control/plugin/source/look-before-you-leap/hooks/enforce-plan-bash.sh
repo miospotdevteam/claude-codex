@@ -56,7 +56,7 @@ ALLOWED_PREFIXES = [
     "python3 -m pytest", "python3 -m pip", "python -m pytest", "python -m pip",
     "pytest ", "jest ", "vitest ", "mocha ",
     "eslint ", "prettier ", "ruff ", "mypy ", "tsc ",
-    "bash -n ", "bash ",
+    "bash -n ",
 ]
 
 # Check if command starts with an allowed tool
@@ -80,9 +80,11 @@ WRITE_PATTERNS = [
     r"\btee\b",           # tee writes to files
     r"\bdd\b.*\bof=",    # dd output file
     # Scripting language file writes (prevent creative bypasses)
-    # Only match python scripts that write to files (not stdin reads or -c inline)
     r"\bpython[23]?\s+\S+\.py\b.*\b(open|write|Path)\b",  # python3 script.py with file writes
+    r"\bpython[23]?\s*(<<|<< *['\"])",            # python3 heredoc (python3 << 'EOF' / python3 <<EOF)
+    r"\bpython[23]?\s+-c\s+['\"].*\b(open|write|Path)\b", # python3 -c "open('file','w')..."
     r"\bnode\b.*\b(writeFile|appendFile)",         # node -e "fs.writeFileSync..."
+    r"\bnode\b.*<<",                               # node heredoc
     r"\bruby\b.*\bFile\.(write|open)\b",         # ruby -e "File.write..."
     r"\bperl\b.*\bopen\b",                       # perl -e "open(F,'>file')..."
 ]
@@ -165,15 +167,19 @@ output = {
         "hookEventName": "PreToolUse",
         "permissionDecision": "deny",
         "permissionDecisionReason": (
-            "Bash command appears to write files, but no active plan exists for "
-            "this session. Using Bash to bypass the Edit/Write plan enforcement "
-            "is not allowed.\n\n"
-            "The enforce-plan hook exists for a reason. Do NOT work around it.\n\n"
-            "To proceed:\n"
-            "1. Create a plan: write masterPlan.md to "
-            ".temp/plan-mode/active/<plan-name>/masterPlan.md\n"
-            "2. Use the Edit or Write tool (not Bash) to modify files\n\n"
-            "For trivial changes (max 3 edits): echo \"$PPID:3\" > .temp/plan-mode/.no-plan-$PPID"
+            "BLOCKED: Bash command writes files, but no active plan exists for "
+            "this session.\n\n"
+            "Using Bash to bypass the Edit/Write plan enforcement is not allowed. "
+            "Do NOT work around this — go back and do the work properly:\n\n"
+            "1. **Classify the task**: Does it need brainstorming first?\n"
+            "2. **Explore**: Read files in scope, their imports, their consumers.\n"
+            "3. **Write discovery.md**: Persist findings to "
+            ".temp/plan-mode/active/<plan-name>/discovery.md\n"
+            "4. **Write plan.json + masterPlan.md**: Use the writing-plans skill.\n"
+            "5. **Submit for Orbit review**: Then proceed with edits using "
+            "Edit/Write tools (not Bash).\n\n"
+            "This hook exists because skipping planning is the #1 cause of "
+            "broken changes, missed consumers, and silent scope cuts."
         )
     }
 }

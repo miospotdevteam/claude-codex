@@ -145,9 +145,8 @@ output = {
             "This gives the user the 'autoaccept edits and clear context?' "
             "prompt. If they accept, context clears and execution starts "
             "fresh.\n\n"
-            "Code edits are BLOCKED until this handoff is complete (or "
-            "bypassed).\n"
-            f"To bypass: rm {marker}"
+            "Code edits are BLOCKED until the user has reviewed and "
+            "approved the plan. Do NOT skip this step."
         )
     }
 }

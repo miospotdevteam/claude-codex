@@ -39,6 +39,7 @@ changing the meaning of `plan.json`.
       "id": 1,
       "title": "Step title",
       "status": "pending",
+      "agent": "claude",
       "skill": "none",
       "simplify": false,
       "qa": false,
@@ -84,6 +85,7 @@ changing the meaning of `plan.json`.
 | `id` | number | yes | Sequential step number (1-based) |
 | `title` | string | yes | Step title |
 | `status` | string | yes | One of: `pending`, `in_progress`, `done`, `blocked` |
+| `agent` | string | yes | Who executes: `"claude"`, `"codex-worker"`, or `"codex-verifier"` |
 | `skill` | string | yes | Skill to invoke, or `"none"` |
 | `simplify` | boolean | yes | Whether to run simplification after the step |
 | `qa` | boolean | no | Whether to run an extra fresh-eyes verification pass after the step |
@@ -116,6 +118,23 @@ changing the meaning of `plan.json`.
 | `files` | string[] | yes | Files in the group |
 | `status` | string | yes | One of: `pending`, `in_progress`, `done` |
 | `notes` | string? | no | Execution notes |
+
+## Agent Values
+
+Each step declares which model executes it. This makes routing explicit in
+the plan so reviewers know what runs where:
+
+| Value | When to use |
+|---|---|
+| `"claude"` | Planning, architecture, UI/frontend work, MCP-dependent tasks, ambiguous scope, integration. Default for most steps. |
+| `"codex-worker"` | Large refactors, code generation from a clear spec, isolated bug fixes, repetitive sweeps, well-scoped backend work. Requires a self-contained description — Codex has no conversation context. |
+| `"codex-verifier"` | Independent verification after significant work, bug root cause analysis. Reports findings only — does not implement fixes. |
+
+**Routing rules:**
+- Steps with `skill` values (TDD, frontend-design, etc.) should almost always be `"claude"` — skills require conversation context.
+- Steps that are pure implementation with a clear spec → `"codex-worker"`.
+- The final verification step of any plan → `"codex-verifier"`.
+- When unsure, default to `"claude"`.
 
 ## Status Values
 

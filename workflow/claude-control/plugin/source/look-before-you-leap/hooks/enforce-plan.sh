@@ -142,7 +142,8 @@ output = {
             "1. Call EnterPlanMode\n"
             "2. Write a summary to the scratch pad\n"
             "3. Call ExitPlanMode\n\n"
-            f"To bypass (if Orbit unavailable): rm {marker}"
+            "Code edits are BLOCKED until the user has reviewed and "
+            "approved the plan. Do NOT skip this step."
         )
     }
 }
@@ -183,7 +184,7 @@ output = {
             "implemented correctly and fully.\n\n"
             "Dispatch a verification agent now (see the directive injected when "
             "the step was marked [x]).\n\n"
-            f"To bypass: rm {plan_dir}/.verify-pending-*"
+            "Dispatch a verification agent now. Do NOT skip verification."
         )
     }
 }

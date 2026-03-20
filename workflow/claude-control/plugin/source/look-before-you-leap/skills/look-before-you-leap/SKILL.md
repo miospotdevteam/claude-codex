@@ -180,8 +180,8 @@ compaction recovery depends on them. Do NOT invent your own schema:
 - **`discovery` object** (required, not a separate file): `scope`,
   `entryPoints`, `consumers`, `blastRadius`, `confidence`. Your exploration
   findings go HERE, not just in discovery.md.
-- **Each step**: `id`, `title`, `status`, `skill`, `files`, `description`,
-  `acceptanceCriteria`, `progress`, `result`
+- **Each step**: `id`, `title`, `status`, `agent`, `skill`, `files`,
+  `description`, `acceptanceCriteria`, `progress`, `result`
 - **Each progress item**: `task`, `status`, `files` — all three fields,
   no exceptions. Progress arrays go INSIDE each step, never at the top level.
 
@@ -250,11 +250,26 @@ For renames: add the new name first (keeping the old one temporarily),
 update all consumers, then remove the old name. This ensures the codebase
 compiles at every step.
 
+### Agent routing during execution
+
+When starting a step, check its `agent` field in plan.json:
+
+| `agent` value | What happens |
+|---|---|
+| `"claude"` | Execute the step directly. Check `skill` field for specialized guidance. |
+| `"codex-worker"` | Delegate via `scripts/codex-worker.sh`. Build a self-contained prompt from the step's `description`, `files`, and `acceptanceCriteria`. Write long prompts to a temp file and use `--prompt-file`. |
+| `"codex-verifier"` | Delegate via `scripts/codex-verifier.sh --requirements-file <path>`. The verifier reports findings — it does NOT implement fixes. If it finds issues, Claude fixes them. |
+
+**The `agent` field is not decorative.** It makes routing decisions visible
+in the plan so the user can see which model handles which step during
+review. If a step says `"codex-worker"`, do not execute it in Claude. If
+it says `"claude"`, do not delegate it to Codex.
+
 ### Skill dispatch during execution
 
-When starting a step, check its `skill` field in plan.json. If the field
-is not `"none"`, **invoke that skill** before executing the step. The skill
-provides the execution guidance — follow its phases mechanically.
+When starting a step with `agent: "claude"`, check its `skill` field. If
+the field is not `"none"`, **invoke that skill** before executing the step.
+The skill provides the execution guidance — follow its phases mechanically.
 
 | Step `skill` value | What happens |
 |---|---|
@@ -438,6 +453,17 @@ obvious single-line change. If a hook blocks your edit because no plan
 exists, the correct response is to go create the plan — not to bypass the
 enforcement. The bypass exists as a user-directed escape hatch, not as a
 shortcut for Claude to skip discipline.
+
+**NEVER manipulate `.session-lock` files.** Do not `echo` your PPID into
+a plan's `.session-lock` to claim a plan you didn't create. Session locks
+are managed by `plan_utils.py` — manually writing them is gaming the
+ownership system and defeats plan isolation between sessions.
+
+**NEVER use Bash heredocs to write files when Edit/Write is blocked.**
+If a hook blocks Edit, do not use `python3 << 'EOF'`, `node -e`, or any
+other scripting language via Bash to write files instead. The hook blocked
+your edit for a reason — using Bash to circumvent it is the same violation
+with extra steps.
 
 ---
 

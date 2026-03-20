@@ -398,4 +398,6 @@ If you catch yourself doing any of these, stop and reconsider:
 | Writing implementation before tests on a TDD step | Follow RED-GREEN-REFACTOR — tests first, always. Invoke the TDD skill |
 | Guessing at fixes when tests fail during verification | Invoke `look-before-you-leap:systematic-debugging` — root cause first |
 | Using `.no-plan` bypass when a hook blocks your edit | The bypass is for user-directed trivial overrides only. If the user didn't say "just do it", create the plan |
+| Writing to `.session-lock` to claim a plan you didn't create | Session locks are managed by plan_utils.py. Manually writing PIDs to claim plans is gaming the system |
+| Using python3/node heredocs via Bash to write files when Edit is blocked | The hook blocked Edit for a reason. Bash heredoc file writes are also blocked — follow the plan process |
 | Starting a new feature without brainstorming the design | Invoke `look-before-you-leap:brainstorming` for creative tasks |
