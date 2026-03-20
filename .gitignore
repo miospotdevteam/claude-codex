@@ -1,3 +1,5 @@
 .DS_Store
 .temp/
 .claude/look-before-you-leap.local.md
+__pycache__/
+*.pyc
