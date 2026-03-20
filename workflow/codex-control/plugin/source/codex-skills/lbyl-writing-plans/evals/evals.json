@@ -1,0 +1,68 @@
+{
+  "skill_name": "lbyl-writing-plans",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I've finished exploring the codebase for the auth migration task. discovery.md is ready in .temp/plan-mode/active/migrate-auth-to-v2/. Write the implementation plan.",
+      "expected_output": "The model reads discovery.md, identifies applicable disciplines, writes plan.json plus a complete masterPlan.md, submits the proposal through Orbit, and summarizes the approved plan before execution",
+      "assertions": [
+        "Announces it is using the writing-plans skill",
+        "Reads discovery.md from the plan directory before writing the plan",
+        "Reads relevant discipline checklists based on the task",
+        "Writes plan.json and masterPlan.md to .temp/plan-mode/active/migrate-auth-to-v2/",
+        "masterPlan includes the updated header directive referencing engineering-discipline AND step-specific skills",
+        "masterPlan has all required sections: Context, Required Skills, Applicable Disciplines, Discovery Summary (all 8 subsections), Steps, Blocked Items, Risk Areas",
+        "plan.json contains discovery, steps, progress items, and result fields",
+        "Progress items encode TDD rhythm (write test, verify fail, implement, verify pass, commit)",
+        "Calls orbit_await_review or explicitly surfaces Orbit setup failure instead of silently skipping review",
+        "Summarizes the approved plan to the user before execution"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Discovery is done for a large feature that touches 15+ files across 3 modules. Create the implementation plan with appropriate sub-plans.",
+      "expected_output": "The model creates plan.json plus masterPlan.md, using inline subPlan groups for steps that exceed the 10-file or 5-sub-task threshold",
+      "assertions": [
+        "Reads discovery.md before planning",
+        "Creates inline subPlan in plan.json for steps that touch more than 10 files",
+        "Sub-plans use groups array with 3-8 files per group",
+        "Each group has name, files, status, and notes fields",
+        "masterPlan steps mention sub-plan existence but execution details live in plan.json",
+        "Evaluates EVERY step against sub-plan criteria before saving (mandatory checkpoint)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write an implementation plan. There is no discovery.md in the plan directory yet.",
+      "expected_output": "The model refuses to write the plan and directs back to Step 1 (Explore) since discovery is a prerequisite",
+      "assertions": [
+        "Checks for discovery.md in the plan directory",
+        "Does NOT write a plan.json or masterPlan without discovery",
+        "Explicitly states that discovery must be completed first",
+        "Directs the user back to Step 1 (Explore) of the conductor"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The brainstorming skill produced a design.md. Now write the implementation plan.",
+      "expected_output": "The model reads both design.md and discovery.md, incorporating approved design decisions into the plan",
+      "assertions": [
+        "Reads discovery.md from the plan directory",
+        "Reads design.md from the same plan directory",
+        "Incorporates design decisions from design.md into the masterPlan Context and Steps",
+        "Does NOT contradict decisions recorded in design.md",
+        "masterPlan steps align with the chosen approach from the design"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Just do it — fix the typo in the config file, no plan needed.",
+      "expected_output": "The model does NOT invoke writing-plans for a trivial change the user explicitly asked to skip planning for",
+      "assertions": [
+        "Does NOT invoke the writing-plans skill",
+        "Respects the user's 'just do it' directive",
+        "Proceeds directly to the fix without creating a masterPlan"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+# PostToolUse hook: Enforce plan checkpointing during execution.
+#
+# Tracks edits to non-plan files. After 5 code edits without a
+# plan file update, injects a strong reminder into context.
+#
+# Counter file: .temp/plan-mode/.edit-count
+#   - Incremented on each Edit/Write to a non-.temp file
+#   - Reset to 0 when any plan file (plan.json, masterPlan.md, etc.) is edited
+#
+# Input: JSON on stdin with tool_name, tool_input.file_path, cwd
+
+set -euo pipefail
+
+INPUT=$(cat)
+
+# Extract file path from tool input
+FILE_PATH=$(python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+print(data.get('tool_input', {}).get('file_path', ''))
+" <<< "$INPUT" 2>/dev/null) || true
+
+[ -z "$FILE_PATH" ] && exit 0
+
+# Find project root
+source "${BASH_SOURCE[0]%/*}/lib/find-root.sh"
+
+CWD=$(python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+print(data.get('cwd', ''))
+" <<< "$INPUT" 2>/dev/null) || true
+
+PROJECT_ROOT="$(find_project_root "${CWD:-$PWD}")"
+PLAN_MODE_DIR="$PROJECT_ROOT/.temp/plan-mode"
+ACTIVE_DIR="$PLAN_MODE_DIR/active"
+COUNTER_FILE="$PLAN_MODE_DIR/.edit-count"
+
+# No active plan directory — nothing to enforce
+[ ! -d "$ACTIVE_DIR" ] && exit 0
+
+# Check if any active plan exists (plan.json or legacy masterPlan.md)
+plan_found=false
+for plan in "$ACTIVE_DIR"/*/plan.json; do
+  if [ -f "$plan" ]; then
+    plan_found=true
+    break
+  fi
+done
+if [ "$plan_found" = false ]; then
+  for plan in "$ACTIVE_DIR"/*/masterPlan.md; do
+    if [ -f "$plan" ]; then
+      plan_found=true
+      break
+    fi
+  done
+fi
+[ "$plan_found" = false ] && exit 0
+
+# --- Determine if this edit was to a plan file or a code file ---
+
+# Plan file edit: anything inside .temp/plan-mode/ (plan.json, masterPlan, sub-plans, discovery)
+if [[ "$FILE_PATH" == *"/.temp/plan-mode/"* ]]; then
+  # Reset counter — plan was just updated
+  echo "0" > "$COUNTER_FILE"
+  exit 0
+fi
+
+# Edits to other .temp/ files (not plan-mode) — ignore, don't count
+if [[ "$FILE_PATH" == *"/.temp/"* ]]; then
+  exit 0
+fi
+
+# --- Code file edit: increment counter ---
+
+current=0
+if [ -f "$COUNTER_FILE" ]; then
+  current=$(cat "$COUNTER_FILE" 2>/dev/null) || true
+  # Validate it's a number
+  if ! [[ "$current" =~ ^[0-9]+$ ]]; then
+    current=0
+  fi
+fi
+
+current=$((current + 1))
+echo "$current" > "$COUNTER_FILE"
+
+# Threshold: remind after 5 edits without a plan update
+if [ "$current" -lt 5 ]; then
+  exit 0
+fi
+
+# --- Inject reminder ---
+
+# Find the active plan path for the message (prefer plan.json)
+PLUGIN_ROOT="$(cd "${BASH_SOURCE[0]%/*}/.." && pwd)"
+PLAN_UTILS="${PLUGIN_ROOT}/skills/look-before-you-leap/scripts/plan_utils.py"
+latest_plan=$(python3 "$PLAN_UTILS" find-for-session "$PROJECT_ROOT" "$PPID" 2>/dev/null) || true
+
+# No fallback to other sessions' plans — keep empty if this session has none
+
+# Reset counter after firing the reminder
+echo "0" > "$COUNTER_FILE"
+
+export HOOK_EDIT_COUNT="$current"
+export HOOK_PLAN_PATH="${latest_plan:-unknown}"
+
+python3 << 'PYEOF'
+import json, os, sys
+
+edit_count = os.environ["HOOK_EDIT_COUNT"]
+plan_path = os.environ["HOOK_PLAN_PATH"]
+
+output = {
+    "hookSpecificOutput": {
+        "hookEventName": "PostToolUse",
+        "additionalContext": (
+            f"⚠️ CHECKPOINT NOW — You have made {edit_count} code edits without "
+            "updating your plan.\n\n"
+            "The persistent-plans skill REQUIRES checkpointing every 2-3 file edits. "
+            "**Stop coding and update your plan NOW:**\n\n"
+            "1. Update plan.json via plan_utils.py (update-step, update-progress)\n"
+            "2. Mark completed progress items as done\n"
+            "3. Add notes to the current step's result field\n\n"
+            "If auto-compaction fired RIGHT NOW, could you resume from the plan file alone? "
+            "If not, the plan is stale.\n\n"
+            f"Plan file: {plan_path}"
+        )
+    }
+}
+
+json.dump(output, sys.stdout)
+PYEOF
